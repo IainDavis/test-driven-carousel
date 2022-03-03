@@ -9,11 +9,14 @@ let decrementAndWrapTo = (length) => (index) => (index + length - 1) % length;
 
 class Carousel extends React.PureComponent {
   static propTypes = {
+    defaultImg: CarouselSlide.propTypes.Img,
+    defaultImgHeight: CarouselSlide.propTypes.imgHeight,
     slides: PropTypes.arrayOf(PropTypes.shape(CarouselSlide.propTypes))
       .isRequired,
   };
 
   static defaultProps = {
+    defaultImg: CarouselSlide.defaultProps.Img,
     defaultImgHeight: CarouselSlide.defaultProps.imgHeight,
   };
 
@@ -36,12 +39,16 @@ class Carousel extends React.PureComponent {
   };
 
   render() {
-    const { defaultImgHeight, slides, ...rest } = this.props;
+    const { defaultImg, defaultImgHeight, slides, ...rest } = this.props;
     const { slideIndex } = this.state;
 
     return (
       <div {...rest}>
-        <CarouselSlide imgHeight={defaultImgHeight} {...slides[slideIndex]} />
+        <CarouselSlide
+          Img={defaultImg}
+          imgHeight={defaultImgHeight}
+          {...slides[slideIndex]}
+        />
         <CarouselButton data-action="prev" onClick={this.handlePrevClick}>
           Prev
         </CarouselButton>
