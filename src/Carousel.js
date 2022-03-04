@@ -18,7 +18,6 @@ export class Carousel extends React.PureComponent {
     defaultImgHeight: CarouselSlide.defaultProps.imgHeight,
   };
 
-  constructor(props) 
   handlePrevClick = () => {
     const { slideIndexDecrement, slides } = this.props;
     slideIndexDecrement(slides.length);
