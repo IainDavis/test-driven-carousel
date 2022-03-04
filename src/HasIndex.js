@@ -1,5 +1,6 @@
 // src/HasIndex.js
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const decrementAndWrapTo = (uBound) => (index) =>
   uBound ? (index - 1 + uBound) % uBound : index - 1;
@@ -7,27 +8,56 @@ const decrementAndWrapTo = (uBound) => (index) =>
 const incrementAndWrapTo = (uBound) => (index) =>
   uBound ? (index + 1) % uBound : index + 1;
 
-export default (Component, indexPropName) =>
-  class ComponentWithIndex extends React.PureComponent {
+const capitalize = (word) => `${word[0].toUpperCase()}${word.slice(1)}`;
+
+export default (Component, indexPropName) => {
+  const defaultIndexPropName = `default${capitalize(indexPropName)}`;
+
+  return class ComponentWithIndex extends React.PureComponent {
     static displayName = `HasIndex(${Component.displayName || Component.name})`;
 
-    state = {
-      index: 0,
+    static propTypes = {
+      [indexPropName]: PropTypes.number,
+      [defaultIndexPropName]: PropTypes.number,
+      onIndexChange: PropTypes.func,
     };
 
+    static defaultProps = {
+      [defaultIndexPropName]: 0,
+    };
+
+    static getDerivedStateFromProps(props, state) {
+      const index = props[indexPropName] || state.index;
+      return index !== state.index ? { index: index } : null;
+    }
+
+    constructor(props) {
+      super(props);
+      this.state = {
+        index: props[defaultIndexPropName],
+      };
+    }
+
     handleIncrement = (upperBound) => {
-      this.setState(({ index }) => ({
-        index: incrementAndWrapTo(upperBound)(index),
-      }));
+      const { onIndexChange } = this.props;
+      this.setState(({ index }) => {
+        const newIndex = incrementAndWrapTo(upperBound)(index);
+        if (onIndexChange) onIndexChange({ target: { value: newIndex } });
+        return { index: newIndex };
+      });
     };
 
     handleDecrement = (upperBound) => {
-      this.setState(({ index }) => ({
-        index: decrementAndWrapTo(upperBound)(index),
-      }));
+      const { onIndexChange } = this.props;
+      this.setState(({ index }) => {
+        const newIndex = decrementAndWrapTo(upperBound)(index);
+        if (onIndexChange) onIndexChange({ target: { value: newIndex } });
+        return { index: newIndex };
+      });
     };
 
     render() {
+      const { [defaultIndexPropName]: _defaultIndexProp, ...rest } = this.props;
       const { index } = this.state;
 
       const indexProps = {
@@ -36,6 +66,7 @@ export default (Component, indexPropName) =>
         [`${indexPropName}Increment`]: this.handleIncrement,
       };
 
-      return <Component {...indexProps} {...this.props} />;
+      return <Component {...indexProps} {...rest} />;
     }
   };
+};
