@@ -3,11 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import CarouselButton from './CarouselButton';
 import CarouselSlide from './CarouselSlide';
+import HasIndex from './HasIndex';
 
-let incrementAndWrapTo = (length) => (index) => (index + 1) % length;
-let decrementAndWrapTo = (length) => (index) => (index + length - 1) % length;
-
-class Carousel extends React.PureComponent {
+export class Carousel extends React.PureComponent {
   static propTypes = {
     defaultImg: CarouselSlide.propTypes.Img,
     defaultImgHeight: CarouselSlide.propTypes.imgHeight,
@@ -20,27 +18,26 @@ class Carousel extends React.PureComponent {
     defaultImgHeight: CarouselSlide.defaultProps.imgHeight,
   };
 
-  state = {
-    slideIndex: 0,
-  };
-
   handlePrevClick = () => {
-    const { slides } = this.props;
-    this.setState(({ slideIndex }) => ({
-      slideIndex: decrementAndWrapTo(slides.length)(slideIndex),
-    }));
+    const { slideIndexDecrement, slides } = this.props;
+    slideIndexDecrement(slides.length);
   };
 
   handleNextClick = () => {
-    const { slides } = this.props;
-    this.setState(({ slideIndex }) => ({
-      slideIndex: incrementAndWrapTo(slides.length)(slideIndex),
-    }));
+    const { slideIndexIncrement, slides } = this.props;
+    slideIndexIncrement(slides.length);
   };
 
   render() {
-    const { defaultImg, defaultImgHeight, slides, ...rest } = this.props;
-    const { slideIndex } = this.state;
+    const {
+      defaultImg,
+      defaultImgHeight,
+      slides,
+      slideIndex,
+      slideIndexDecrement: _slideIndexIncrement,
+      slideIndexIncrement: _slideIndexDecrement,
+      ...rest
+    } = this.props;
 
     return (
       <div {...rest}>
@@ -60,4 +57,4 @@ class Carousel extends React.PureComponent {
   }
 }
 
-export default Carousel;
+export default HasIndex(Carousel, 'slideIndex');

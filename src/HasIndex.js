@@ -30,12 +30,12 @@ export default (Component, indexPropName) =>
     render() {
       const { index } = this.state;
 
-      return (
-        <Component
-          index={index}
-          indexDecrement={this.handleDecrement}
-          indexIncrement={this.handleIncrement}
-        />
-      );
+      const indexProps = {
+        [indexPropName]: index,
+        [`${indexPropName}Decrement`]: this.handleDecrement,
+        [`${indexPropName}Increment`]: this.handleIncrement,
+      };
+
+      return <Component {...indexProps} {...this.props} />;
     }
   };
