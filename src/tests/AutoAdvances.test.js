@@ -1,9 +1,7 @@
-// src/tests/AutoAvances.test.js
+// src/tests/AutoAdvances.test.js
 import React from 'react';
 import { shallow } from 'enzyme';
 import AutoAdvances from '../AutoAdvances';
-
-const SECONDS = 1e3;
 
 describe('AutoAdvances()', () => {
   const MockComponent = () => null;
@@ -20,11 +18,10 @@ describe('AutoAdvances()', () => {
     );
   });
 
-  const autoAdvanceDelay = 10 * SECONDS;
+  const autoAdvanceDelay = 10e3;
   const upperBound = 5;
   let indexIncrement;
   let wrapper;
-
   beforeEach(() => {
     indexIncrement = jest.fn();
     jest.useFakeTimers();
@@ -51,11 +48,11 @@ describe('AutoAdvances()', () => {
 
   it('does not set a timer if `autoAdvanceDelay` is 0', () => {
     wrapper.setProps({ index: 1, autoAdvanceDelay: 0 });
-    jest.advanceTimersByTime(999999);
+    jest.advanceTimersByTime(autoAdvanceDelay);
     expect(indexIncrement).not.toHaveBeenCalled();
   });
 
-  it('rests the timer when the target prop changes', () => {
+  it('reeset the timer when the target prop changes', () => {
     jest.advanceTimersByTime(autoAdvanceDelay - 1);
     wrapper.setProps({ index: 1 });
     jest.advanceTimersByTime(1);
