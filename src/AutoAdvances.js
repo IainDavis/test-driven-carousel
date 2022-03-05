@@ -26,12 +26,11 @@ export default (Component, propName, upperBoundPropName) =>
     }
 
     componentDidUpdate(prevProps) {
-      if (
+      let changeOccurred =
         prevProps[propName] !== this.props[propName] ||
-        prevProps[upperBoundPropName] !== this.props[upperBoundPropName]
-      ) {
-        this.startTimer();
-      }
+        prevProps[upperBoundPropName] !== this.props[upperBoundPropName];
+
+      if (changeOccurred) this.startTimer();
     }
 
     componentWillUnmount() {
@@ -41,16 +40,14 @@ export default (Component, propName, upperBoundPropName) =>
     startTimer() {
       clearTimeout(this._timer);
       if (!this.props.autoAdvanceDelay) return;
+      let increment = this.props[`${propName}Increment`];
 
-      let upperBound;
-      if (typeof this.props[upperBoundPropName] === 'number') {
-        upperBound = this.props[upperBoundPropName];
-      } else if (this.props[upperBoundPropName] != null) {
-        upperBound = this.props[upperBoundPropName].length;
-      }
+      let upperBound = this.props[upperBoundPropName];
+      if (upperBound && typeof upperBound != 'number')
+        upperBound = upperBound.length;
 
       this._timer = setTimeout(() => {
-        this.props[`${propName}Increment`](upperBound);
+        increment(upperBound);
       }, this.props.autoAdvanceDelay);
     }
 
